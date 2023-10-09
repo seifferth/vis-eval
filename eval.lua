@@ -15,7 +15,7 @@ vis:option_register('evaltimeout', 'number', function(value)
     evaltimeout = value
 end, 'Code block evaluation timeout in seconds (default: 2)')
 
-function get_block(selection)
+local function get_block(selection)
     local range, shell, resultpos = nil, nil, nil
     local cursor_line, cursor_col = selection.line, selection.col
     for i = selection.line, 0, -1 do
@@ -39,7 +39,20 @@ function get_block(selection)
     return range, shell, resultpos
 end
 
-function replace_output(window, resultpos, resultcode, new_output)
+local function indent(str, indent)
+    return indent .. string.gsub(
+        string.gsub(str, '\n', '\n' .. indent),
+        indent .. '$', '')
+end
+local function with_newline(str)
+    if string.sub(str, -1, -1) == '\n' then
+        return str
+    else
+        return str .. '\n'
+    end
+end
+
+local function replace_output(window, resultpos, resultcode, new_output)
     local cursor_line, cursor_col = window.selection.line,
                                     window.selection.col
     local force_replace_cursor = false
@@ -68,20 +81,7 @@ function replace_output(window, resultpos, resultcode, new_output)
     window:draw()
 end
 
-function indent(str, indent)
-    return indent .. string.gsub(
-        string.gsub(str, '\n', '\n' .. indent),
-        indent .. '$', '')
-end
-function with_newline(str)
-    if string.sub(str, -1, -1) == '\n' then
-        return str
-    else
-        return str .. '\n'
-    end
-end
-
-function eval_block()
+local function eval_block()
     local range, shell, resultpos = get_block(vis.win.selection)
     if range == nil then
         vis:info('Unable to locate any code block above cursor position')
