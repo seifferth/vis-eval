@@ -5,8 +5,8 @@ function evalmap(name, shell)
     eval_shell_map[name] = shell
 end
 vis:command_register('evalmap', function(argv)
-    name = table.remove(argv, 1)
-    shell = table.concat(argv, ' ')
+    local name = table.remove(argv, 1)
+    local shell = table.concat(argv, ' ')
     evalmap(name, shell)
 end, 'Map interpreter commands `evalmap <language> <interpreter>`')
 
